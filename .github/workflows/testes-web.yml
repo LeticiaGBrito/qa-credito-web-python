@@ -18,21 +18,12 @@ jobs:
 
     env:
       HEADLESS: "true"
-      BASE_URL: "http://127.0.0.1:8000"
       PYTHONUNBUFFERED: "1"
 
     steps:
-      - name: Baixar o projeto de automação
+      - name: Baixar o projeto
         uses: actions/checkout@v4
         with:
-          persist-credentials: false
-
-      - name: Baixar a aplicação de crédito
-        uses: actions/checkout@v4
-        with:
-          repository: LeticiaGBrito/qa-credito-api-python
-          ref: main
-          path: aplicacao
           persist-credentials: false
 
       - name: Configurar Python
@@ -40,77 +31,17 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Registrar a versão da aplicação testada
-        run: |
-          mkdir -p reports
-          git -C aplicacao rev-parse HEAD > reports/versao-aplicacao.txt
-          cat reports/versao-aplicacao.txt
-
       - name: Instalar dependências
         run: |
           python -m pip install --upgrade pip
-          python -m pip install \
-            -r requirements-dev.txt \
-            -r aplicacao/requirements.txt
+          python -m pip install -r requirements-dev.txt
           python -m pip check
 
       - name: Conferir o Chrome
         run: google-chrome --version
 
-      - name: Iniciar a aplicação
-        working-directory: aplicacao
-        run: |
-          nohup python -m uvicorn credito.credito_api:app \
-            --host 127.0.0.1 \
-            --port 8000 \
-            > ../reports/servidor.log 2>&1 &
-          echo "$!" > ../reports/servidor.pid
-
-      - name: Aguardar a aplicação ficar disponível
-        run: |
-          python - <<'PY'
-          import time
-          from urllib.error import URLError
-          from urllib.request import urlopen
-
-          base_url = "http://127.0.0.1:8000"
-          limite = time.monotonic() + 60
-
-          while time.monotonic() < limite:
-              try:
-                  with urlopen(
-                      f"{base_url}/health",
-                      timeout=2,
-                  ) as resposta:
-                      disponivel = resposta.status == 200
-
-                  if disponivel:
-                      with urlopen(
-                          f"{base_url}/simulador",
-                          timeout=2,
-                      ) as resposta:
-                          if resposta.status == 200:
-                              print("API e simulador disponíveis.")
-                              break
-              except (URLError, TimeoutError):
-                  pass
-
-              time.sleep(1)
-          else:
-              raise SystemExit(
-                  "A aplicação não ficou disponível em 60 segundos."
-              )
-          PY
-
       - name: Executar os testes web
         run: python -m pytest
-
-      - name: Encerrar a aplicação
-        if: always()
-        run: |
-          if [ -f reports/servidor.pid ]; then
-            kill "$(cat reports/servidor.pid)" 2>/dev/null || true
-          fi
 
       - name: Disponibilizar relatórios e evidências
         if: always()

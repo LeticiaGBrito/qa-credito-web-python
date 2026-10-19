@@ -1,3 +1,4 @@
+-r requirements-app.txt
 selenium>=4.6,<5
 pytest==9.1.1
 pytest-html==4.2.0

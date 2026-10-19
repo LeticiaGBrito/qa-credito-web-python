@@ -2,200 +2,247 @@
 
 [![Testes Web Python](https://github.com/LeticiaGBrito/qa-credito-web-python/actions/workflows/testes-web.yml/badge.svg?branch=main)](https://github.com/LeticiaGBrito/qa-credito-web-python/actions/workflows/testes-web.yml)
 
-Projeto educacional de automação de testes web de um simulador
-fictício de análise de crédito, utilizando Python, Selenium e pytest.
+Projeto educacional de automação de testes web com Python,
+Selenium e pytest, utilizando um simulador fictício de análise
+de crédito.
 
-A suíte verifica a jornada pelo navegador, desde o preenchimento
-do formulário até a apresentação do resultado, incluindo validações
-de campos e limpeza da interface.
+O repositório inclui a aplicação demonstrativa e os testes.
+Após instalar as dependências, um único comando inicia a aplicação,
+executa os testes e encerra o servidor automaticamente.
 
-A aplicação e suas regras são fictícias, sem vínculo com empresas
-ou políticas reais de concessão de crédito.
+As regras são fictícias e não representam políticas reais
+de concessão de crédito. O projeto não possui vínculo com empresas.
 
 ## Objetivo
 
-Demonstrar a construção de uma automação web com:
+Demonstrar a transformação de requisitos e regras de negócio
+em testes automatizados pela interface, contemplando:
 
-- Page Objects e reutilização de ações.
-- Esperas explícitas para sincronização com a interface.
-- Cenários parametrizados e independentes.
-- Validação de regras de negócio e valores de fronteira.
-- Verificação de mensagens, foco e sinalização dos campos.
-- Relatórios HTML e JUnit XML.
-- Captura automática de tela em caso de falha.
-- Execução em integração contínua com GitHub Actions.
-
-## Aplicação testada
-
-O simulador pertence a um projeto separado, desenvolvido com
-Python e FastAPI.
-
-- [Código da aplicação](https://github.com/LeticiaGBrito/qa-credito-api-python)
-- [Simulador publicado](https://qa-credito-api-python.onrender.com/simulador)
-- [Documentação da API](https://qa-credito-api-python.onrender.com/docs)
-
-Na execução local padrão, a aplicação deve estar disponível em:
-
-```text
-http://127.0.0.1:8000/simulador
-```
-
-Na CI, o workflow baixa o repositório da aplicação e inicia uma
-instância dentro do ambiente do GitHub Actions.
+- Aprovação e reprovação de solicitações.
+- Valores de fronteira.
+- Campos obrigatórios.
+- Entradas inválidas.
+- Mensagens de validação.
+- Limpeza do formulário.
+- Relatórios de execução e capturas de tela em caso de falha.
+- Execução automatizada em integração contínua.
 
 ## Tecnologias e finalidade
 
-| Tecnologia ou prática | Finalidade |
+| Tecnologia | Finalidade |
 | --- | --- |
-| Python | Implementação dos Page Objects, fixtures e testes |
-| Selenium WebDriver | Controle do Chrome e interação com a interface |
-| Selenium Manager | Gerenciamento do driver quando necessário |
-| pytest | Descoberta, organização e execução dos testes |
-| Parametrização | Execução do mesmo comportamento com diferentes dados |
-| Fixtures | Preparação e encerramento do navegador |
-| Page Object Model | Separação entre interação com a página e verificações dos testes |
-| WebDriverWait | Espera por condições específicas da interface |
-| pytest-html | Geração do relatório HTML com evidências |
-| JUnit XML | Exportação dos resultados em formato compatível com ferramentas de CI |
-| GitHub Actions | Execução automática dos testes |
-| Git | Versionamento do código |
+| Python | Implementação da aplicação demonstrativa e dos testes |
+| Selenium WebDriver | Interação automatizada com o navegador |
+| Selenium Manager | Gerenciamento do driver do navegador, quando necessário |
+| pytest | Organização e execução dos testes |
+| pytest-html | Geração do relatório HTML |
+| JUnit XML | Formato de relatório para integração com ferramentas de CI |
+| FastAPI | Disponibilização da aplicação e dos endpoints HTTP |
+| Uvicorn | Execução do servidor local |
+| Decimal | Representação dos valores monetários nas regras de negócio |
+| HTML, CSS e JavaScript | Interface e comportamento do simulador |
+| GitHub Actions | Execução dos testes em integração contínua |
 
-As dependências diretas estão registradas em
-`requirements-dev.txt`.
+As dependências estão registradas em:
+
+- `requirements-app.txt`: dependências da aplicação demonstrativa.
+- `requirements-dev.txt`: dependências da aplicação e dos testes.
 
 ## Organização dos arquivos
 
 | Arquivo | Responsabilidade |
 | --- | --- |
+| `app/__init__.py` | Identifica o pacote da aplicação demonstrativa |
+| `app/analise_credito_service.py` | Valida os dados e aplica as regras fictícias de crédito |
+| `app/credito_api.py` | Disponibiliza a interface e os endpoints HTTP |
+| `app/web/index.html` | Implementa o formulário do simulador |
 | `pages/__init__.py` | Identifica o pacote dos Page Objects |
-| `pages/base_page.py` | Centraliza esperas explícitas e ações compartilhadas |
-| `pages/credito_page.py` | Representa os campos, botões, mensagens e resultados do simulador |
-| `tests/conftest.py` | Configura endereço, navegador, fixtures e capturas de falhas |
-| `tests/test_solicitacao_credito.py` | Verifica aprovação e reprovação pela interface |
-| `tests/test_validacao_formulario.py` | Verifica campos obrigatórios, entradas inválidas, separadores decimais e limpeza |
-| `pytest.ini` | Configura descoberta dos testes e geração de relatórios |
-| `requirements-dev.txt` | Registra as dependências da automação |
-| `.github/workflows/testes-web.yml` | Define o fluxo de integração contínua |
-| `.gitignore` | Exclui ambientes locais, caches e relatórios do versionamento |
+| `pages/base_page.py` | Centraliza ações reutilizáveis e esperas explícitas |
+| `pages/credito_page.py` | Define os localizadores e as ações do simulador |
+| `tests/conftest.py` | Configura a aplicação local, o navegador, as fixtures e as evidências de falhas |
+| `tests/test_solicitacao_credito.py` | Testa os cenários de aprovação e reprovação |
+| `tests/test_validacao_formulario.py` | Testa campos obrigatórios, entradas inválidas e limpeza do formulário |
+| `requirements-app.txt` | Registra as dependências da aplicação |
+| `requirements-dev.txt` | Registra as dependências necessárias para executar a suíte |
+| `pytest.ini` | Configura a descoberta dos testes e a geração dos relatórios |
+| `.github/workflows/testes-web.yml` | Define a execução dos testes no GitHub Actions |
+| `.gitignore` | Exclui do versionamento ambientes locais, caches e relatórios |
 
-### Classes principais
+## Arquitetura da automação
 
-| Classe | Finalidade |
-| --- | --- |
-| `BasePage` | Disponibiliza ações reutilizáveis para aguardar, preencher e clicar |
-| `CreditoPage` | Concentra os localizadores e as interações específicas do simulador |
+A automação utiliza o padrão Page Object para separar
+os testes dos detalhes de interação com a interface.
 
-As verificações dos resultados ficam nos testes, enquanto os
-Page Objects concentram as interações e a leitura da interface.
+### BasePage
 
-## Regras fictícias de aprovação
+Centraliza comportamentos compartilhados:
 
-A solicitação deve atender a todos os critérios:
+- Aguardar um elemento ficar visível.
+- Preencher campos.
+- Aguardar um elemento ficar disponível para clique.
+- Clicar em elementos.
+
+Utiliza `WebDriverWait` e condições esperadas do Selenium
+para sincronizar as interações com a página.
+
+### CreditoPage
+
+Representa a página do simulador e concentra:
+
+- Localizadores dos campos e botões.
+- Preenchimento da solicitação.
+- Envio da análise.
+- Consulta do status e dos motivos de reprovação.
+- Leitura das mensagens de validação.
+- Verificação dos valores dos campos e do foco.
+- Limpeza do formulário.
+
+### Testes
+
+Descrevem os cenários e verificam os resultados esperados,
+utilizando os métodos disponibilizados pelos Page Objects.
+
+### Fixtures
+
+Preparam e encerram os recursos necessários:
+
+- Uma aplicação local por sessão de testes.
+- Uma sessão do Chrome por teste.
+- Um Page Object com o simulador aberto.
+- Capturas de tela quando há falhas de preparação ou execução,
+  desde que o navegador esteja disponível.
+
+## Aplicação demonstrativa independente
+
+A aplicação necessária para os testes está dentro deste repositório,
+na pasta `app`.
+
+Por padrão, ao executar o pytest:
+
+1. Uma porta local disponível é reservada.
+2. O servidor da aplicação é iniciado.
+3. A disponibilidade de `/health` e `/simulador` é verificada.
+4. Os testes são executados no Chrome.
+5. Cada sessão do navegador é encerrada após seu teste.
+6. O servidor é encerrado ao final da sessão.
+
+Não é necessário baixar ou iniciar o projeto
+`qa-credito-api-python` para executar esta suíte.
+
+## Regras de negócio
+
+Todos os campos são obrigatórios:
+
+- Idade.
+- Renda mensal.
+- Valor solicitado.
+
+### Validação dos dados
+
+- A idade deve ser um número inteiro entre 0 e 120.
+- A renda mensal deve ser maior que zero.
+- O valor solicitado deve ser maior que zero.
+- Os valores monetários devem ter no máximo duas casas decimais.
+
+### Critérios de aprovação
+
+Uma solicitação será aprovada quando atender a todos os critérios:
 
 - Idade igual ou superior a 18 anos.
 - Renda mensal igual ou superior a R$ 2.000,00.
 - Valor solicitado menor ou igual a cinco vezes a renda mensal.
 
-Dados válidos que não atendem aos critérios geram uma análise
-reprovada, com os respectivos motivos.
+Solicitações com dados válidos que não atendem aos critérios
+recebem o resultado `REPROVADO`, com os respectivos motivos.
 
-A interface também verifica campos obrigatórios, idade entre
-0 e 120, valores monetários positivos e precisão de até duas
-casas decimais.
+Dados inválidos geram mensagens de validação no formulário.
 
 ## Estratégia de testes
 
-A suíte atual possui **24 cenários automatizados**.
+A suíte atual possui **24 testes web**:
 
 | Grupo | Quantidade |
 | --- | ---: |
-| Aprovação e limites exatos | 2 |
-| Reprovação e múltiplos motivos | 4 |
+| Aprovação e valores de fronteira | 2 |
+| Reprovação por regras de negócio | 4 |
 | Campos obrigatórios | 4 |
 | Entradas inválidas | 10 |
 | Separadores decimais | 2 |
 | Limpeza do formulário | 2 |
 | **Total** | **24** |
 
-### Solicitação de crédito
+### Aprovação e valores de fronteira
 
-- Aprovação com dados válidos.
-- Aprovação com idade, renda e valor nos limites exatos.
-- Reprovação por idade inferior ao mínimo.
-- Reprovação por renda inferior ao mínimo.
-- Reprovação por valor acima do limite.
-- Exibição de todos os motivos quando vários critérios falham.
+- Aprovar uma solicitação com dados válidos.
+- Aprovar uma solicitação com idade mínima, renda mínima
+  e valor solicitado no limite permitido.
+
+### Reprovação
+
+- Reprovar solicitante menor de idade.
+- Reprovar renda abaixo do mínimo.
+- Reprovar valor solicitado acima do limite.
+- Exibir todos os motivos quando vários critérios falham.
 
 ### Campos obrigatórios
 
-- Idade não preenchida.
-- Renda mensal não preenchida.
-- Valor solicitado não preenchido.
-- Todos os campos não preenchidos.
+- Exigir idade.
+- Exigir renda mensal.
+- Exigir valor solicitado.
+- Exigir todos os campos quando o formulário estiver vazio.
 
-Os testes conferem as mensagens, o atributo `aria-invalid`,
-o foco no primeiro campo inválido e a ausência do painel
-de resultado.
+As verificações incluem mensagens, indicação de campo inválido,
+foco no primeiro campo com erro e ausência de resultado da análise.
 
 ### Entradas inválidas
 
 - Idade negativa.
-- Idade superior a 120.
+- Idade acima de 120.
 - Idade fracionária.
 - Idade preenchida com texto.
 - Renda igual a zero.
-- Renda com três casas decimais.
+- Renda com mais de duas casas decimais.
 - Renda preenchida com texto.
 - Valor solicitado igual a zero.
-- Valor solicitado com três casas decimais.
+- Valor solicitado com mais de duas casas decimais.
 - Valor solicitado preenchido com texto.
 
-### Formatos monetários
+### Separadores decimais
 
-- Aceitação de vírgula como separador decimal.
-- Aceitação de ponto como separador decimal.
+- Aceitar valores monetários com vírgula.
+- Aceitar valores monetários com ponto.
 
-### Botão Limpar
+### Limpeza do formulário
 
-- Limpeza dos campos e ocultação do resultado após uma análise.
-- Remoção das mensagens e da sinalização dos campos inválidos.
-- Retorno do foco ao campo de idade.
+- Limpar os campos e o resultado após uma análise.
+- Limpar as mensagens e as indicações de validação.
 
-## Isolamento e sincronização
-
-Cada cenário utiliza uma nova sessão do Chrome, encerrada
-ao final do teste.
-
-A automação utiliza esperas explícitas para aguardar elementos
-visíveis, botões habilitados e a apresentação ou ocultação
-do resultado.
-
-Não utiliza pausas fixas com `time.sleep` nos Page Objects
-ou nos testes.
-
-O workflow utiliza uma espera com tentativas limitadas para
-verificar a disponibilidade da aplicação antes de iniciar a suíte.
-
-## Pré-requisitos para execução local
+## Pré-requisitos
 
 - Python 3.13.
 - Google Chrome instalado.
-- Git, para clonar os repositórios.
-- Acesso à internet para instalar dependências e, quando necessário,
-  obter o driver.
-- Aplicação de crédito em execução.
+- Git, caso o projeto seja obtido por clonagem.
+- Acesso à internet para instalar as dependências e,
+  quando necessário, obter o driver do navegador.
 
-Não é necessário instalar o ChromeDriver manualmente na
-configuração padrão.
+A execução local foi validada com Python 3.13.5 no Windows.
 
-## Preparar o projeto de automação
+Não é necessário instalar o ChromeDriver manualmente
+na configuração padrão, pois o Selenium Manager gerencia
+o driver quando necessário.
 
-Execute os comandos em uma pasta de sua preferência:
+## Obter o projeto
 
-```powershell
+```bash
 git clone https://github.com/LeticiaGBrito/qa-credito-web-python.git
-Set-Location .\qa-credito-web-python
+cd qa-credito-web-python
 ```
+
+Execute os próximos comandos na raiz do projeto.
+
+## Preparar o ambiente
+
+### Windows PowerShell
 
 Crie o ambiente virtual:
 
@@ -209,234 +256,245 @@ Instale as dependências:
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-Não é necessário ativar o ambiente virtual quando seu executável
-é utilizado explicitamente nos comandos.
+### Linux ou macOS
 
-## Iniciar a aplicação local
-
-Em outro terminal, clone o projeto da aplicação em uma pasta
-separada da automação:
-
-```powershell
-git clone https://github.com/LeticiaGBrito/qa-credito-api-python.git
-Set-Location .\qa-credito-api-python
-```
-
-Se o repositório já estiver disponível, entre na pasta existente
-em vez de cloná-lo novamente.
-
-Prepare o ambiente da aplicação:
-
-```powershell
-py -3.13 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-```
-
-Inicie o servidor:
-
-```powershell
-.\.venv\Scripts\python.exe -m uvicorn credito.credito_api:app --host 127.0.0.1 --port 8000
-```
-
-Mantenha esse terminal aberto durante os testes.
-
-Para encerrar a aplicação, pressione `Ctrl + C`.
-
-## Executar os testes
-
-No terminal do projeto de automação:
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest
-```
-
-Por padrão, o Chrome abre com interface visível e janela maximizada.
-
-### Executar somente os cenários de aprovação
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest tests/test_solicitacao_credito.py -k deve_aprovar
-```
-
-### Executar somente as validações do formulário
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest tests/test_validacao_formulario.py
-```
-
-## Configurações por variáveis de ambiente
-
-| Variável | Padrão | Finalidade |
-| --- | --- | --- |
-| `BASE_URL` | `http://127.0.0.1:8000` | Define o endereço base da aplicação, sem `/simulador` |
-| `HEADLESS` | `false` | Define se o Chrome será executado sem interface visível |
-
-### Executar sem abrir a janela do navegador
-
-```powershell
-$env:HEADLESS = "true"
-.\.venv\Scripts\python.exe -m pytest
-```
-
-No modo headless, a janela é configurada com dimensões de
-1440 × 1000.
-
-### Voltar à execução visível
-
-```powershell
-$env:HEADLESS = "false"
-```
-
-### Alterar o endereço da aplicação
-
-```powershell
-$env:BASE_URL = "http://127.0.0.1:8000"
-```
-
-As variáveis definidas dessa forma permanecem na sessão
-atual do terminal.
-
-## Execução em Linux ou macOS
-
-Prepare o ambiente da automação:
+Com Python 3.13 disponível:
 
 ```bash
 python3.13 -m venv .venv
 ./.venv/bin/python -m pip install -r requirements-dev.txt
 ```
 
-Com a aplicação disponível, execute:
+Não é necessário ativar o ambiente virtual quando seu executável
+é utilizado explicitamente nos comandos.
+
+## Executar todos os testes
+
+### Windows PowerShell
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest
+```
+
+### Linux ou macOS
 
 ```bash
-HEADLESS=true BASE_URL=http://127.0.0.1:8000 \
 ./.venv/bin/python -m pytest
 ```
 
-A aplicação também precisa ter seu próprio ambiente preparado
-e estar em execução, conforme o README do repositório da API.
+Por padrão, a aplicação é iniciada automaticamente e o Chrome
+abre com interface visível e janela maximizada.
+
+## Executar apenas parte da suíte
+
+### Cenários de aprovação e reprovação
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_solicitacao_credito.py
+```
+
+### Validações do formulário
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_validacao_formulario.py
+```
+
+### Apenas cenários de aprovação
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_solicitacao_credito.py -k deve_aprovar
+```
+
+O resultado `deselected` indica que outros testes foram
+excluídos pelo filtro utilizado; não significa falha.
+
+## Executar sem abrir a janela do navegador
+
+O modo headless executa o Chrome sem interface visível.
+
+### Windows PowerShell
+
+```powershell
+$env:HEADLESS = "true"
+.\.venv\Scripts\python.exe -m pytest
+```
+
+Para voltar à execução com janela visível:
+
+```powershell
+Remove-Item Env:HEADLESS -ErrorAction SilentlyContinue
+```
+
+### Linux ou macOS
+
+```bash
+HEADLESS=true ./.venv/bin/python -m pytest
+```
+
+No modo headless, a janela é configurada com
+dimensões de 1440 × 1000 pixels.
+
+## Configuração opcional de endereço externo
+
+A variável `BASE_URL` permite testar outra instância compatível
+da aplicação.
+
+Quando essa variável está definida, a fixture utiliza o endereço
+informado e não inicia nem encerra a aplicação externa.
+
+Essa aplicação deve disponibilizar `/simulador`, os mesmos
+elementos de interface e os comportamentos esperados pela suíte.
+
+### Exemplo no Windows PowerShell
+
+```powershell
+$env:BASE_URL = "http://127.0.0.1:8000"
+.\.venv\Scripts\python.exe -m pytest
+```
+
+Nesse modo, a aplicação externa precisa estar em execução.
+
+Para voltar ao modo independente, com inicialização automática:
+
+```powershell
+Remove-Item Env:BASE_URL -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe -m pytest
+```
 
 ## Relatórios e evidências
 
-| Caminho | Conteúdo |
-| --- | --- |
-| `reports/relatorio-testes.html` | Resultados para visualização no navegador |
-| `reports/resultados.xml` | Resultados em formato JUnit XML |
-| `reports/screenshots/` | Capturas PNG geradas em caso de falha |
+Os relatórios são gerados automaticamente conforme
+a configuração do `pytest.ini`.
 
-Para abrir o relatório no Windows:
+| Arquivo ou pasta | Finalidade |
+| --- | --- |
+| `reports/relatorio-testes.html` | Visualização dos resultados no navegador |
+| `reports/resultados.xml` | Resultados em formato compatível com JUnit XML |
+| `reports/screenshots/` | Capturas de tela geradas em caso de falha |
+
+### Abrir o relatório no Windows
 
 ```powershell
 Start-Process .\reports\relatorio-testes.html
 ```
 
-O HTML e o XML são sobrescritos a cada execução.
-As capturas PNG anteriores permanecem na pasta até serem removidas.
+O relatório HTML apresenta os resultados, a duração dos testes
+e informações do ambiente de execução.
 
-Os relatórios, as capturas e o ambiente virtual não são versionados.
+### Capturas de tela
 
-### Captura automática de falhas
+Quando um teste falha durante a preparação ou execução
+e o navegador está disponível:
 
-Quando um cenário falha na preparação ou na execução e existe
-uma sessão de navegador disponível, a configuração tenta:
+- Uma captura é anexada ao relatório HTML.
+- Uma cópia em PNG é salva em `reports/screenshots/`.
 
-1. Capturar a tela atual do navegador.
-2. Incorporar a imagem ao relatório HTML.
-3. Salvar uma cópia PNG em `reports/screenshots`.
+Se o navegador não estiver disponível, a captura não poderá
+ser realizada.
 
-No relatório, a evidência aparece como
-**Tela no momento da falha**.
+A ausência de screenshots em uma execução sem falhas é esperada.
 
-Se a falha ocorrer antes da criação do navegador, não haverá
-uma sessão disponível para capturar a tela.
+Os arquivos HTML e XML são sobrescritos a cada execução.
+Capturas anteriores podem permanecer na pasta de screenshots.
 
-A configuração atual não captura falhas da etapa de encerramento
-das fixtures.
+Os relatórios e as capturas não são versionados no Git.
 
-A captura mostra a área visível da página, não necessariamente
-todo o seu conteúdo.
+## Integração contínua com GitHub Actions
 
-## Integração contínua
-
-O workflow `testes-web.yml` está configurado para executar em:
-
-- Push para `main`.
-- Pull request direcionado a `main`.
-- Acionamento manual por `workflow_dispatch`.
-
-O fluxo realiza as seguintes etapas:
-
-1. Baixa o repositório da automação.
-2. Baixa a branch `main` do repositório da aplicação.
-3. Configura o Python 3.13.
-4. Registra o commit da aplicação que será testada.
-5. Instala e verifica as dependências.
-6. Confere a disponibilidade do Chrome.
-7. Inicia a aplicação localmente no runner.
-8. Aguarda os endpoints `/health` e `/simulador`.
-9. Executa os testes com Chrome headless.
-10. Encerra o processo da aplicação.
-11. Publica os relatórios e evidências disponíveis como artefato.
-
-O ambiente configurado é `ubuntu-24.04`, com limite de
-15 minutos para o job.
-
-A execução dos testes na CI não depende do Render nem
-da máquina da autora ligada.
-
-O workflow deste repositório implementa **integração contínua (CI)**.
-Ele não realiza deploy da aplicação.
-
-Alterações feitas somente no repositório da API não disparam
-automaticamente este workflow web.
-
-### Rastreabilidade da aplicação
-
-A aplicação é obtida da branch `main`, que pode mudar entre
-as execuções.
-
-O commit efetivamente testado fica registrado no artefato:
+O workflow está definido em:
 
 ```text
-versao-aplicacao.txt
+.github/workflows/testes-web.yml
 ```
 
-### Consultar os resultados no GitHub
+Ele pode ser executado:
 
-1. Abra a aba **Actions**.
-2. Selecione uma execução de **Testes Web Python**.
-3. Abra o job **Selenium com Chrome** para consultar as etapas.
-4. Em **Summary → Artifacts**, baixe
-   `relatorios-testes-web-python`.
-5. Extraia o ZIP antes de abrir o relatório HTML.
+- A cada push para a branch `main`.
+- Em pull requests direcionados à branch `main`.
+- Manualmente pela opção `Run workflow`, na aba Actions.
 
-Os artefatos estão configurados para retenção de **14 dias**.
+### Etapas da execução
 
-Além dos relatórios e das eventuais capturas, o workflow pode
-disponibilizar:
+1. Baixar o repositório.
+2. Configurar Python 3.13.
+3. Instalar as dependências.
+4. Verificar a consistência das dependências com `pip check`.
+5. Conferir a versão do Chrome.
+6. Executar a suíte com `python -m pytest`.
+7. Disponibilizar os relatórios e as evidências como artefato.
 
-- `servidor.log`: saída do servidor.
-- `versao-aplicacao.txt`: commit da aplicação testada.
-- `servidor.pid`: identificador do processo iniciado na execução.
+A execução utiliza Ubuntu 24.04 e Chrome em modo headless.
 
-A publicação dos arquivos disponíveis é tentada mesmo quando
-uma etapa anterior falha.
+O próprio pytest inicia e encerra a aplicação demonstrativa.
+O workflow não precisa baixar outro repositório nem iniciar
+um servidor em uma etapa separada.
+
+### Consultar os resultados
+
+1. Abra a aba **Actions** do repositório.
+2. Selecione a execução desejada.
+3. Abra o job **Selenium com Chrome**.
+4. Consulte a etapa **Executar os testes web**.
+
+### Baixar os relatórios
+
+Na página da execução, procure a seção **Artifacts** e baixe:
+
+```text
+relatorios-testes-web-python
+```
+
+Extraia o arquivo baixado antes de abrir o relatório HTML.
+
+Os artefatos estão configurados para retenção de 14 dias.
+A etapa de publicação dos relatórios é executada mesmo quando
+uma etapa anterior falha, desde que existam arquivos para enviar.
+
+Este workflow implementa integração contínua (CI).
+Ele não publica nem implanta a aplicação em uma hospedagem.
+
+## Executar o simulador manualmente
+
+Esta etapa é opcional e não é necessária para executar os testes.
+
+### Windows PowerShell
+
+```powershell
+.\.venv\Scripts\python.exe -m uvicorn app.credito_api:app --host 127.0.0.1 --port 8000
+```
+
+### Linux ou macOS
+
+```bash
+./.venv/bin/python -m uvicorn app.credito_api:app --host 127.0.0.1 --port 8000
+```
+
+Com o servidor em execução, acesse:
+
+- Simulador: http://127.0.0.1:8000/simulador
+- Disponibilidade: http://127.0.0.1:8000/health
+- Swagger UI: http://127.0.0.1:8000/docs
+
+Para encerrar, pressione `Ctrl + C` no terminal.
 
 ## Limites do projeto
 
-- Projeto educacional com dados e regras fictícias.
-- Automação atualmente direcionada ao Chrome.
-- Não utiliza dados reais de clientes.
-- Não implementa uma política real de concessão de crédito.
-- Não realiza testes de carga, segurança ou acessibilidade completos.
-- A verificação de foco e `aria-invalid` cobre comportamentos
-  específicos da interface, não uma auditoria de acessibilidade.
+- Aplicação e regras de crédito educacionais.
+- Sem autenticação ou persistência em banco de dados.
+- Sem dados reais de clientes.
+- Sem integração com serviços financeiros externos.
+- A suíte atual utiliza apenas o Google Chrome.
+- Não inclui testes de carga, segurança ou acessibilidade completos.
+- Os tempos apresentados no relatório não representam
+  resultados de testes de performance.
 - Testes aprovados não significam ausência de defeitos
   ou cobertura total.
-- Os tempos registrados representam a execução dos testes,
-  não um benchmark de desempenho da aplicação.
+- O workflow deste repositório executa CI, sem deploy automático.
 
 ## Autora
 
 Letícia Gonçalves Garcia — QA Sênior
 
 [Portfólio](https://leticiagbrito.github.io/)
+
+[GitHub](https://github.com/LeticiaGBrito)
