@@ -13,6 +13,37 @@ executa os testes e encerra o servidor automaticamente.
 As regras são fictícias e não representam políticas reais
 de concessão de crédito. O projeto não possui vínculo com empresas.
 
+## Demonstração publicada
+
+A aplicação demonstrativa está hospedada no Render:
+
+- [Abrir simulador de crédito](https://qa-credito-web-python.onrender.com/simulador)
+- [Consultar disponibilidade](https://qa-credito-web-python.onrender.com/health)
+- [Documentação Swagger](https://qa-credito-web-python.onrender.com/docs)
+- [Especificação OpenAPI](https://qa-credito-web-python.onrender.com/openapi.json)
+
+Utilize apenas dados fictícios.
+
+A instância gratuita pode entrar em suspensão por inatividade.
+O primeiro acesso pode demorar enquanto a aplicação é retomada.
+
+A demonstração permite explorar o formulário manualmente.
+Por padrão, os testes automatizados utilizam uma instância local
+própria, iniciada pelas fixtures, sem depender do Render.
+
+### Exemplo para explorar o simulador
+
+| Campo | Valor |
+| --- | --- |
+| Idade | `30` |
+| Renda mensal | `3000,00` |
+| Valor solicitado | `10000,00` |
+
+Resultado esperado: **Solicitação aprovada**.
+
+Ao alterar somente a idade para `17`, o resultado esperado é
+**Solicitação reprovada**, com o motivo da idade mínima.
+
 ## Objetivo
 
 Demonstrar a transformação de requisitos e regras de negócio
@@ -38,15 +69,17 @@ em testes automatizados pela interface, contemplando:
 | pytest-html | Geração do relatório HTML |
 | JUnit XML | Formato de relatório para integração com ferramentas de CI |
 | FastAPI | Disponibilização da aplicação e dos endpoints HTTP |
-| Uvicorn | Execução do servidor local |
+| Uvicorn | Execução do servidor da aplicação |
 | Decimal | Representação dos valores monetários nas regras de negócio |
 | HTML, CSS e JavaScript | Interface e comportamento do simulador |
 | GitHub Actions | Execução dos testes em integração contínua |
+| Render | Hospedagem da aplicação demonstrativa |
 
 As dependências estão registradas em:
 
 - `requirements-app.txt`: dependências da aplicação demonstrativa.
-- `requirements-dev.txt`: dependências da aplicação e dos testes.
+- `requirements-dev.txt`: inclui as dependências da aplicação
+  e acrescenta as ferramentas de testes.
 
 ## Organização dos arquivos
 
@@ -54,7 +87,7 @@ As dependências estão registradas em:
 | --- | --- |
 | `app/__init__.py` | Identifica o pacote da aplicação demonstrativa |
 | `app/analise_credito_service.py` | Valida os dados e aplica as regras fictícias de crédito |
-| `app/credito_api.py` | Disponibiliza a interface e os endpoints HTTP |
+| `app/credito_api.py` | Disponibiliza a interface, os endpoints HTTP e a documentação da API |
 | `app/web/index.html` | Implementa o formulário do simulador |
 | `pages/__init__.py` | Identifica o pacote dos Page Objects |
 | `pages/base_page.py` | Centraliza ações reutilizáveis e esperas explícitas |
@@ -68,12 +101,28 @@ As dependências estão registradas em:
 | `.github/workflows/testes-web.yml` | Define a execução dos testes no GitHub Actions |
 | `.gitignore` | Exclui do versionamento ambientes locais, caches e relatórios |
 
-## Arquitetura da automação
+## Arquitetura da aplicação e da automação
+
+### Aplicação demonstrativa
+
+A aplicação separa as regras de negócio da comunicação HTTP.
+
+| Componente | Responsabilidade |
+| --- | --- |
+| `AnaliseCreditoService` | Validar os dados e aplicar os critérios de aprovação |
+| `ResultadoAnalise` | Representar o status e os motivos da análise em uma dataclass imutável |
+| `credito_api.py` | Receber requisições, chamar o serviço e devolver respostas HTTP |
+| `app/web/index.html` | Apresentar o formulário e consultar a API |
+
+O formulário envia os dados para `POST /analises-credito`
+e apresenta o resultado ao usuário.
+
+### Page Objects
 
 A automação utiliza o padrão Page Object para separar
 os testes dos detalhes de interação com a interface.
 
-### BasePage
+#### BasePage
 
 Centraliza comportamentos compartilhados:
 
@@ -85,7 +134,7 @@ Centraliza comportamentos compartilhados:
 Utiliza `WebDriverWait` e condições esperadas do Selenium
 para sincronizar as interações com a página.
 
-### CreditoPage
+#### CreditoPage
 
 Representa a página do simulador e concentra:
 
@@ -142,7 +191,8 @@ Todos os campos são obrigatórios:
 - A idade deve ser um número inteiro entre 0 e 120.
 - A renda mensal deve ser maior que zero.
 - O valor solicitado deve ser maior que zero.
-- Os valores monetários devem ter no máximo duas casas decimais.
+- Os valores monetários devem ser finitos e ter no máximo
+  duas casas decimais.
 
 ### Critérios de aprovação
 
@@ -156,6 +206,9 @@ Solicitações com dados válidos que não atendem aos critérios
 recebem o resultado `REPROVADO`, com os respectivos motivos.
 
 Dados inválidos geram mensagens de validação no formulário.
+
+A API também valida os dados recebidos, independentemente
+das verificações realizadas pela interface.
 
 ## Estratégia de testes
 
@@ -226,6 +279,7 @@ foco no primeiro campo com erro e ausência de resultado da análise.
   quando necessário, obter o driver do navegador.
 
 A execução local foi validada com Python 3.13.5 no Windows.
+A suíte também foi executada no GitHub Actions em Linux.
 
 Não é necessário instalar o ChromeDriver manualmente
 na configuração padrão, pois o Selenium Manager gerencia
@@ -282,8 +336,11 @@ Não é necessário ativar o ambiente virtual quando seu executável
 ./.venv/bin/python -m pytest
 ```
 
-Por padrão, a aplicação é iniciada automaticamente e o Chrome
-abre com interface visível e janela maximizada.
+Por padrão, quando `BASE_URL` não está definida, a aplicação
+é iniciada automaticamente.
+
+O Chrome abre com interface visível e janela maximizada,
+exceto quando o modo headless está habilitado.
 
 ## Executar apenas parte da suíte
 
@@ -345,6 +402,9 @@ informado e não inicia nem encerra a aplicação externa.
 Essa aplicação deve disponibilizar `/simulador`, os mesmos
 elementos de interface e os comportamentos esperados pela suíte.
 
+Informe somente o endereço base, sem acrescentar `/simulador`,
+pois o Page Object já inclui esse caminho.
+
 ### Exemplo no Windows PowerShell
 
 ```powershell
@@ -360,6 +420,9 @@ Para voltar ao modo independente, com inicialização automática:
 Remove-Item Env:BASE_URL -ErrorAction SilentlyContinue
 .\.venv\Scripts\python.exe -m pytest
 ```
+
+O workflow do GitHub Actions utiliza o modo independente
+e não executa os testes contra a instância pública do Render.
 
 ## Relatórios e evidências
 
@@ -436,6 +499,8 @@ um servidor em uma etapa separada.
 3. Abra o job **Selenium com Chrome**.
 4. Consulte a etapa **Executar os testes web**.
 
+[Acessar as execuções no GitHub Actions](https://github.com/LeticiaGBrito/qa-credito-web-python/actions)
+
 ### Baixar os relatórios
 
 Na página da execução, procure a seção **Artifacts** e baixe:
@@ -447,11 +512,39 @@ relatorios-testes-web-python
 Extraia o arquivo baixado antes de abrir o relatório HTML.
 
 Os artefatos estão configurados para retenção de 14 dias.
-A etapa de publicação dos relatórios é executada mesmo quando
-uma etapa anterior falha, desde que existam arquivos para enviar.
+A etapa de publicação dos relatórios utiliza `if: always()`,
+permitindo disponibilizar os arquivos gerados mesmo quando
+os testes falham.
 
 Este workflow implementa integração contínua (CI).
-Ele não publica nem implanta a aplicação em uma hospedagem.
+A hospedagem da aplicação demonstrativa é realizada no Render.
+
+## Hospedagem no Render
+
+A aplicação demonstrativa é publicada como um Web Service Python,
+utilizando o mesmo repositório.
+
+| Configuração | Valor |
+| --- | --- |
+| Repositório | `LeticiaGBrito/qa-credito-web-python` |
+| Branch | `main` |
+| Runtime | Python 3 |
+| Root Directory | Raiz do repositório |
+| Build Command | `pip install -r requirements-app.txt` |
+| Start Command | `uvicorn app.credito_api:app --host 0.0.0.0 --port $PORT` |
+| Health Check Path | `/health` |
+
+O Render instala somente as dependências da aplicação.
+Selenium e as ferramentas de testes não são necessários
+para disponibilizar o simulador.
+
+A variável `$PORT` é fornecida pelo ambiente da hospedagem.
+O endereço `0.0.0.0` permite que o servidor receba as requisições
+encaminhadas pelo Render.
+
+O GitHub Actions executa os testes e o Render hospeda a aplicação.
+O workflow atual não possui uma etapa que acione o deploy
+ou condicione sua execução ao resultado dos testes.
 
 ## Executar o simulador manualmente
 
@@ -471,11 +564,27 @@ Esta etapa é opcional e não é necessária para executar os testes.
 
 Com o servidor em execução, acesse:
 
-- Simulador: http://127.0.0.1:8000/simulador
-- Disponibilidade: http://127.0.0.1:8000/health
-- Swagger UI: http://127.0.0.1:8000/docs
+- [Simulador local](http://127.0.0.1:8000/simulador)
+- [Disponibilidade local](http://127.0.0.1:8000/health)
+- [Swagger UI local](http://127.0.0.1:8000/docs)
 
 Para encerrar, pressione `Ctrl + C` no terminal.
+
+## Endereços da aplicação
+
+| Caminho | Finalidade |
+| --- | --- |
+| `/simulador` | Interface para preenchimento e análise da solicitação |
+| `/health` | Consulta simples de disponibilidade |
+| `/analises-credito` | Endpoint que recebe a análise por HTTP POST |
+| `/docs` | Documentação interativa Swagger |
+| `/openapi.json` | Especificação OpenAPI |
+
+O caminho raiz `/` não possui página configurada e retorna HTTP 404.
+Para abrir a interface, utilize `/simulador`.
+
+O endpoint `/health` informa que a aplicação está respondendo.
+Ele não verifica banco de dados ou serviços externos.
 
 ## Limites do projeto
 
@@ -489,7 +598,11 @@ Para encerrar, pressione `Ctrl + C` no terminal.
   resultados de testes de performance.
 - Testes aprovados não significam ausência de defeitos
   ou cobertura total.
-- O workflow deste repositório executa CI, sem deploy automático.
+- O workflow executa CI com uma instância local da aplicação.
+- A publicação no Render é configurada separadamente do workflow.
+- A suíte do CI não valida automaticamente a instância pública.
+- A hospedagem gratuita pode apresentar demora no primeiro acesso
+  após um período de inatividade.
 
 ## Autora
 
